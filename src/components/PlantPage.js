@@ -1,37 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import Search from "./Search";
 import NewPlantForm from "./NewPlantForm";
 import PlantList from "./PlantList";
 
-function PlantPage() {
+const PlantPage = () => {
   const [plants, setPlants] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:6001/plants")
       .then((response) => response.json())
-      .then((data) => setPlants(data));
+      .then((plantsData) => setPlants(plantsData));
   }, []);
 
-  const handleAddPlant = (newPlant) => {
-    setPlants([...plants, newPlant]);
+  const handleSearch = (term) => {
+    setSearchTerm(term.toLowerCase());
   };
 
   const filteredPlants = plants.filter((plant) =>
-    plant.name.toLowerCase().includes(searchTerm.toLowerCase())
+    plant.name.toLowerCase().includes(searchTerm)
   );
 
   return (
     <main>
-      <Link to="/">
-        <button>Back to Home</button>
-      </Link>
-      <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      <NewPlantForm onAddPlant={handleAddPlant} />
-      <PlantList plants={filteredPlants} />
+      <Search handleSearch={handleSearch} />
+      <NewPlantForm plants={plants} setPlants={setPlants} />
+      <PlantList plants={filteredPlants} setPlants={setPlants} />
     </main>
   );
-}
+};
 
 export default PlantPage;
